@@ -1,0 +1,76 @@
+plugins {
+	id 'org.springframework.boot' version '2.6.2'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+	id 'com.google.protobuf' version '0.8.17'
+}
+
+group = 'com.alan'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.4.5'
+
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.22'
+
+	implementation 'net.devh:grpc-client-spring-boot-starter:2.13.0.RELEASE'
+//	implementation 'net.devh:grpc-server-spring-boot-starter:2.13.0.RELEASE'
+	runtimeOnly 'io.grpc:grpc-netty-shaded:1.43.1'
+	implementation 'io.grpc:grpc-protobuf:1.43.1'
+	implementation 'io.grpc:grpc-stub:1.43.1'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+
+protobuf {
+	protoc {
+		artifact = "com.google.protobuf:protoc:3.19.1"
+	}
+	plugins {
+		grpc {
+			artifact = 'io.grpc:protoc-gen-grpc-java:1.43.1'
+		}
+	}
+	generateProtoTasks {
+		all()*.plugins {
+			grpc {}
+		}
+	}
+}
+
+sourceSets {
+	main {
+		proto {
+			// In addition to the default 'src/main/proto'
+			srcDir 'src/main/protobuf'
+			srcDir 'src/main/protocolbuffers'
+			// In addition to the default '**/*.proto' (use with caution).
+			// Using an extension other than 'proto' is NOT recommended,
+			// because when proto files are published along with class files, we can
+			// only tell the type of a file from its extension.
+			include '**/*.protodevel'
+		}
+		java {
+
+		}
+	}
+	test {
+		proto {
+			// In addition to the default 'src/test/proto'
+			srcDir 'src/test/protocolbuffers'
+		}
+	}
+}
